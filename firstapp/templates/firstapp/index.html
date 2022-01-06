@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Мессенджер</title>
+</head>
+<body>
+<h1>Мессенджер ебать</h1>
+Вы вошли под аккаунтом <b>{{ user }}</b> <a href="messages">Мои сообщения</a> <br>
+{% for client in users %}
+    {% if not client == user %}
+    <a href="profile/{{ client.id }}"> {{ client.username }} <br></a>
+    {% endif %}
+{% endfor %}
+
+</body>
+</html>
