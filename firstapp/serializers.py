@@ -25,14 +25,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     all_users = [i.id for i in User.objects.all()]
+    all_tickets = [i.id for i in Tickets.objects.all()]
+    # all_users = [i.username for i in User.objects.all()]
     user = serializers.StringRelatedField(read_only=True)
-    user_id = serializers.ChoiceField(choices=all_users)
-    messages = serializers.SlugRelatedField(slug_field='text', read_only=True, many=True)
+    # user_id = serializers.ChoiceField(choices=all_users)
+    id = serializers.ChoiceField(choices=all_tickets)
+    # messages = serializers.SlugRelatedField(slug_field='text', read_only=True, many=True)
 
     class Meta:
         model = Tickets
         fields = '__all__'
-        # fields = ('user_id', 'user', 'message',)
-        # exclude = ('id','message')
-        # depth = 1
-    # def create(self, validated_data):
+        depth = 1
