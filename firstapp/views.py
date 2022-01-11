@@ -1,43 +1,20 @@
-from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404, GenericAPIView
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.views import Response
 from rest_framework.permissions import *
 from rest_framework import authentication, status
-from firstapp.models import UserProfile, Tickets
-from firstapp.serializers import UserSerializer, UserProfileSerializer, TicketSerializer
-from rest_framework.response import Response
+from firstapp.models import *
+from firstapp.serializers import *
 
 from .tasks import supper_sum
 
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.contrib.auth.models import User
-
-from .models import *
-
 
 # Signals
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
-
-
-# @receiver(post_save, sender=Message)
-# def create_message(sender, instance, created, **kwargs):
+# @receiver(post_save, sender=User)
+# def create_profile(sender, instance, created, **kwargs):
 #     if created:
-#         current_user_id = instance.user.id
-#         current_ticket = Tickets.objects.filter(user_id=current_user_id)[0]
-#         ticket_status = current_ticket.status
-#         if (len(current_ticket) == 0) or (len(current_ticket) == 0 and ticket_status != 'unresolved'):
-#             Tickets.objects.create(
-#                 # message_id=instance.id,
-#                 user_id=instance.user_id,
-#             )
-#         else:
-#             raise Exception('ssssssssssssssssssssssssssssssssss')
+#         UserProfile.objects.create(user=instance)
 
 
 class UserView(ModelViewSet):
@@ -50,38 +27,65 @@ class UserView(ModelViewSet):
 class UserProfileView(ModelViewSet):
     """Профильная информация юзеров"""
     queryset = UserProfile.objects.all()
+
     serializer_class = UserProfileSerializer
 
     # permission_classes = [IsAdminUser]
 
 
-class TicketView(ModelViewSet):
+class MessageView(ModelViewSet):
+    """Список сообщений"""
+
+    serializer_class = MessageSerializer
+
+    def get_permissions(self):
+        if self.action == 'delete':
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+    def get_queryset(self):
+        user_id = self.request.user
+        return Message.objects.filter(user_id=user_id)
+
+    def create(self, request):
+        new_message = Message(
+
+        )
+
+
+
+class TicketView(ViewSet):
+    """Список всех тикетов"""
+
+    def list(self, request):
+        # if request.user.
+        queryset = Tickets.objects.filter(user_id=request.user.id)
+        serializer = TicketSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = Tickets.objects.filter(user_id=request.user.id)
+        ticket = get_object_or_404(queryset, pk=pk)
+        serializer = TicketSerializer(ticket)
+        return Response(serializer.data)
+
+
+class AllTicketView(ModelViewSet):
     """Список всех тикетов"""
     queryset = Tickets.objects.all()
     serializer_class = TicketSerializer
 
-    permission_classes = [IsAuthenticated]
-
-    def get_permissions(self):
-        if self.action == 'list' or self.action == 'create':
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
+    permission_classes = [IsAdminUser]
 
 
-    # def put(self, request, *args, **kwargs):
-    #     data = request.data
-    #     statuses = [i[0] for i in Tickets.STATUS]
-    #     current_id = data['id']
-    #     status_message = data['status']
-    #     if status_message in statuses:
-    #         Tickets.objects.filter(id=current_id).update(
-    #             status=status_message
-    #         )
-    #         return Response(data=data, status=status.HTTP_200_OK)
-    #     else:
-    #         return Response({'detail': f"incorrect status - '{status_message}'"})
+def get_permissions(self):
+    if self.action == 'list' or self.action == 'create':
+        permission_classes = [IsAuthenticated]
+    else:
+        permission_classes = [IsAdminUser]
+    return [permission() for permission in permission_classes]
 
 
 def index(request):
