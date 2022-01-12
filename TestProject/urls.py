@@ -7,7 +7,6 @@ from firstapp.views import *
 router = SimpleRouter()
 
 router.register('api/users', UserView)
-# router.register('api/tickets', TicketView)
 router.register('api/tickets', TicketView, basename='Ticket')
 router.register('api/tickets/<int:pk>', TicketView, basename='Ticket')
 router.register('api/profile', UserProfileView)

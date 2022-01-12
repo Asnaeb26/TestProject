@@ -10,13 +10,6 @@ from firstapp.serializers import *
 from .tasks import supper_sum
 
 
-# Signals
-# @receiver(post_save, sender=User)
-# def create_profile(sender, instance, created, **kwargs):
-#     if created:
-#         UserProfile.objects.create(user=instance)
-
-
 class UserView(ModelViewSet):
     """Список всех имеющихся юзеров"""
     queryset = User.objects.all()
@@ -50,26 +43,53 @@ class MessageView(ModelViewSet):
         return Message.objects.filter(user_id=user_id)
 
     def create(self, request):
+        user_id = request.user.id
+
+        obj = Tickets.objects.filter(user_id=user_id)
+        # if not obj.exists() or (obj.exists() and obj.exclude(status='unresolved')):
+        #     new_ticket = Tickets.objects.create(user_id=user_id)
+        #     ticket_id = new_ticket.id
+        # else:
+        #     current_ticket = obj.get(status="unresolved")
+        #     ticket_id = current_ticket.id
+
         new_message = Message(
-
+            user_id=user_id,
+            to_user_id=request.data.get('to_user_id', 1),
+            text=request.data.get('text'),
+            # ticket_id=ticket_id
         )
+        new_message.save()
+        serializer = MessageSerializer(new_message)
+        return Response(serializer.data)
 
 
-
-class TicketView(ViewSet):
+class TicketView(ModelViewSet):
     """Список всех тикетов"""
+    serializer_class = TicketSerializer
 
-    def list(self, request):
-        # if request.user.
-        queryset = Tickets.objects.filter(user_id=request.user.id)
-        serializer = TicketSerializer(queryset, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        user_id = self.request.user
+        return Tickets.objects.filter(user_id=user_id)
 
-    def retrieve(self, request, pk=None):
-        queryset = Tickets.objects.filter(user_id=request.user.id)
-        ticket = get_object_or_404(queryset, pk=pk)
-        serializer = TicketSerializer(ticket)
-        return Response(serializer.data)
+    def get_permissions(self):
+        if self.action == 'create' or self.action == 'list':
+            permission_classes = [IsAuthenticated]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+    # def list(self, request):
+    #     # if request.user.
+    #     queryset = Tickets.objects.filter(user_id=request.user.id)
+    #     serializer = TicketSerializer(queryset, many=True)
+    #     return Response(serializer.data)
+    #
+    # def retrieve(self, request, pk=None):
+    #     queryset = Tickets.objects.filter(user_id=request.user.id)
+    #     ticket = get_object_or_404(queryset, pk=pk)
+    #     serializer = TicketSerializer(ticket)
+    #     return Response(serializer.data)
 
 
 class AllTicketView(ModelViewSet):

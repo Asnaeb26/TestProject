@@ -18,8 +18,9 @@ class Message(models.Model):
     to_user_id = models.IntegerField(default=0)
     text = models.TextField("Текст")
     date_message = models.DateTimeField(auto_now_add=True)
-
-
+    # ticket = models.ForeignKey(Tickets, on_delete=models.CASCADE)
+#
+#
 class Tickets(models.Model):
     STATUS = [
         ('unresolved', 'Нерешенная'),
