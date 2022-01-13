@@ -13,14 +13,6 @@ class UserProfile(models.Model):
         return self.user.username
 
 
-class Message(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
-    to_user_id = models.IntegerField(default=0)
-    text = models.TextField("Текст")
-    date_message = models.DateTimeField(auto_now_add=True)
-    # ticket = models.ForeignKey(Tickets, on_delete=models.CASCADE)
-#
-#
 class Tickets(models.Model):
     STATUS = [
         ('unresolved', 'Нерешенная'),
@@ -34,4 +26,12 @@ class Tickets(models.Model):
         default='unresolved',
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    messages = models.ManyToManyField(Message, verbose_name='сообщения')
+    # messages = models.ManyToManyField(Message, verbose_name='сообщения')
+
+
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    to_user_id = models.IntegerField(default=0)
+    text = models.TextField("Текст")
+    date_message = models.DateTimeField(auto_now_add=True)
+    ticket = models.ForeignKey(Tickets, on_delete=models.CASCADE)
