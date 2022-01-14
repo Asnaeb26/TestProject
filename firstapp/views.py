@@ -3,7 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import Response
 from rest_framework.permissions import *
 from firstapp.serializers import *
-
+from django.db.models import Q
 # from .tasks import supper_sum
 
 
@@ -37,7 +37,9 @@ class MessageView(ModelViewSet):
 
     def get_queryset(self):
         user_id = self.request.user
-        return Message.objects.filter(user_id=user_id)
+        # to_user_id =
+        # return Message.objects.filter(user_id=user_id, to_user_id=1)
+        return Message.objects.filter(Q(user_id=user_id) | Q(user_id=1))
 
     def create(self, request):
         user_id = request.user.id
@@ -123,27 +125,27 @@ def profile(request, pk):
     return render(request, 'firstapp/profile.html', context)
 
 
-def messages(request):
-    current_id = request.user.id
-    received_message = Message.objects.filter(to_user_id=current_id)
-    sent_message = Message.objects.filter(user_id=current_id)
-    sender = User.objects.get(id=sent_message[0].to_user_id)
-    context = {
-        'sender': sender,
-        'received_message': received_message,
-        'sent_message': sent_message
-    }
-    return render(request, 'firstapp/messages.html', context)
-
-
-def add_message(request):
-    # message = request.GET['text_message']
-    to_user_id = request.POST['user_from_id']
-    new_message = Message(
-        user_id=request.user.id,
-        to_user_id=request.POST['user_from_id'],
-        message=request.POST['text_message']
-    )
-    new_message.save()
-    # return HttpResponseRedirect('firstapp/profile.html')
-    return render(request, 'firstapp/profile.html')
+# def messages(request):
+#     current_id = request.user.id
+#     received_message = Message.objects.filter(to_user_id=current_id)
+#     sent_message = Message.objects.filter(user_id=current_id)
+#     sender = User.objects.get(id=sent_message[0].to_user_id)
+#     context = {
+#         'sender': sender,
+#         'received_message': received_message,
+#         'sent_message': sent_message
+#     }
+#     return render(request, 'firstapp/messages.html', context)
+#
+#
+# def add_message(request):
+#     # message = request.GET['text_message']
+#     to_user_id = request.POST['user_from_id']
+#     new_message = Message(
+#         user_id=request.user.id,
+#         to_user_id=request.POST['user_from_id'],
+#         message=request.POST['text_message']
+#     )
+#     new_message.save()
+#     # return HttpResponseRedirect('firstapp/profile.html')
+#     return render(request, 'firstapp/profile.html')
