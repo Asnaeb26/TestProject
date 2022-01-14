@@ -97,7 +97,7 @@ class AllTicketView(ModelViewSet):
     queryset = Tickets.objects.all()
     serializer_class = TicketSerializer
 
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
 
 def get_permissions(self):
@@ -123,6 +123,12 @@ def profile(request, pk):
         'current_user': current_user
     }
     return render(request, 'firstapp/profile.html', context)
+
+
+def order_app(request):
+    return render(request, 'firstapp/main_app.html')
+
+
 
 
 # def messages(request):
