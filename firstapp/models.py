@@ -19,14 +19,12 @@ class Tickets(models.Model):
         ('resolved', 'Решенная'),
         ('freezy', 'Замороженная'),
     ]
-    # title = models.CharField(max_length=255)
     status = models.CharField(
         max_length=20,
         choices=STATUS,
         default='unresolved',
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    # messages = models.ManyToManyField(Message, verbose_name='сообщения')
 
 
 class Message(models.Model):

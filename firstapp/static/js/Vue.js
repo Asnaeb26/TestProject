@@ -1,13 +1,13 @@
 new Vue({
-    el: '#orders_app',
+    el: '#ticket_app',
     data: {
-        messages: []
+        tickets: []
     },
     created: function () {
         const vm = this;
-        axios.get('/api/messages')
+        axios.get('/api/tickets')
             .then(function (response) {
-            vm.messages = response.data
+            vm.tickets = response.data
             })
     }
 })

@@ -4,6 +4,8 @@ from rest_framework.views import Response
 from rest_framework.permissions import *
 from firstapp.serializers import *
 from django.db.models import Q
+
+
 # from .tasks import supper_sum
 
 
@@ -36,10 +38,11 @@ class MessageView(ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
+        admin_user_id = User.objects.filter(is_staff=True)[0].id # Здесь уточнить, сколько будет админов
         user_id = self.request.user
-        # to_user_id =
-        # return Message.objects.filter(user_id=user_id, to_user_id=1)
-        return Message.objects.filter(Q(user_id=user_id) | Q(user_id=1))
+        if not user_id.is_staff:
+            return Message.objects.filter(Q(user_id=user_id) | Q(user_id=admin_user_id))
+        return Message.objects.all()
 
     def create(self, request):
         user_id = request.user.id
@@ -70,7 +73,9 @@ class TicketView(ModelViewSet):
 
     def get_queryset(self):
         user_id = self.request.user
-        return Tickets.objects.filter(user_id=user_id)
+        if not user_id.is_staff:
+            return Tickets.objects.filter(user_id=user_id)
+        return Tickets.objects.all()
 
     # def get_permissions(self):
     #     if self.action == 'create' or self.action == 'list':
@@ -109,10 +114,8 @@ def get_permissions(self):
 
 
 def index(request):
-    ls = (1, 2, 4, 5, 6)
     context = {
-        'users': User.objects.all(),
-        'nums': ls
+        'users': User.objects.all()
     }
     return render(request, 'firstapp/index.html', context)
 
@@ -125,33 +128,5 @@ def profile(request, pk):
     return render(request, 'firstapp/profile.html', context)
 
 
-def order_app(request):
+def ticket_app(request):
     return render(request, 'firstapp/main_app.html')
-
-
-
-
-# def messages(request):
-#     current_id = request.user.id
-#     received_message = Message.objects.filter(to_user_id=current_id)
-#     sent_message = Message.objects.filter(user_id=current_id)
-#     sender = User.objects.get(id=sent_message[0].to_user_id)
-#     context = {
-#         'sender': sender,
-#         'received_message': received_message,
-#         'sent_message': sent_message
-#     }
-#     return render(request, 'firstapp/messages.html', context)
-#
-#
-# def add_message(request):
-#     # message = request.GET['text_message']
-#     to_user_id = request.POST['user_from_id']
-#     new_message = Message(
-#         user_id=request.user.id,
-#         to_user_id=request.POST['user_from_id'],
-#         message=request.POST['text_message']
-#     )
-#     new_message.save()
-#     # return HttpResponseRedirect('firstapp/profile.html')
-#     return render(request, 'firstapp/profile.html')

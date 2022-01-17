@@ -15,12 +15,21 @@
 <h1>Тут кароч происходится что-то</h1>
 {% verbatim %}
 
-<div id="orders_app">
+<div id="ticket_app">
 
-    <div v-for="message in messages">
+    <div v-for="ticket in tickets">
         <div class="btn-lg btn btn-success">
-            user: {{ message.user }} <br>
-            text: {{ message.text }} <br>
+            Ticket №{{ ticket.id }}, status '{{ ticket.status }}'<br>
+
+            <div v-for="message in ticket.messages">
+                <p>***</p>
+                <div class="btn-danger btn">
+                  <b>{{ message.user }}</b> {{ message.date_message | date}} <br>
+                    {{ message.text}}
+                </div>
+
+            </div>
+            <p>_________</p>
         </div>
 
     </div>

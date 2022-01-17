@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('username', 'email')
@@ -30,19 +29,18 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['to_user_id', 'id', 'ticket']
+        # fields = ['id', 'user', 'text', 'date_message']
         # depth = 1
 
 
 class TicketSerializer(serializers.ModelSerializer):
-    all_users = [i.id for i in User.objects.all()]
-    all_tickets = [i.id for i in Tickets.objects.all()]
     user = serializers.StringRelatedField(read_only=True)
-    id = serializers.ChoiceField(choices=all_tickets)
-    # messages = serializers.SlugRelatedField(slug_field='text', read_only=True, many=True)
+    messages = MessageSerializer(many=True, read_only=True, source='message_set')
 
     class Meta:
         model = Tickets
         fields = '__all__'
-        depth = 1
+        # depth = 1
 
