@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'firstapp.apps.FirstappConfig',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
     # 'django-extensions',
     # 'firstapp',
 
@@ -92,6 +93,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 # Password validation
@@ -130,7 +132,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
+    os.path.join(BASE_DIR, "firstapp/static")
 ]
 
 # Default primary key field type

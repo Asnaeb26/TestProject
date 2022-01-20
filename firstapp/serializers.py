@@ -12,25 +12,15 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    # user = serializers.StringRelatedField(read_only=True)
-
-    user = UserSerializer()
-
-    class Meta:
-        model = UserProfile
-        fields = ('id', 'user_id', 'user', 'description')
-        # fields = ('__all__')
-        # depth = 1
-
-
 class MessageSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
+    to_user = serializers.StringRelatedField(read_only=True)
+    # ticket = serializers.SlugRelatedField(slug_field='status', read_only=True)
 
     class Meta:
         model = Message
         # fields = '__all__'
-        exclude = ['to_user_id', 'id', 'ticket']
+        exclude = ['ticket']
         # fields = ['id', 'user', 'text', 'date_message']
         # depth = 1
 
@@ -40,7 +30,8 @@ class TicketSerializer(serializers.ModelSerializer):
     messages = MessageSerializer(many=True, read_only=True, source='message_set')
 
     class Meta:
-        model = Tickets
-        fields = '__all__'
+        model = Ticket
+        # fields = '__all__'
+        fields = ['id', 'user', 'status', 'messages']
         # depth = 1
 
