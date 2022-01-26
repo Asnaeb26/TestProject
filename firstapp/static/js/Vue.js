@@ -5,7 +5,7 @@ new Vue({
     },
     created: function () {
         const vm = this;
-        axios.get('/api/tickets')
+        axios.get('/api/messages')
             .then(function (response) {
             vm.tickets = response.data
             })
