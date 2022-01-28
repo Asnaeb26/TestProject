@@ -7,7 +7,8 @@ from firstapp.views import *
 router = SimpleRouter()
 
 # router.register('api/users', UserView, basename='Users')
-
+admin.site.site_header = 'Наша админка'
+admin.site.index_title = 'Моя супер админка'
 
 urlpatterns = [
     path('admin/', admin.site.urls),

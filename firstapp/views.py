@@ -1,10 +1,8 @@
-from django.shortcuts import render, HttpResponseRedirect, Http404
+from django.shortcuts import render
 from rest_framework.status import *
-from rest_framework.viewsets import *
 from rest_framework.views import Response, APIView
 from firstapp.serializers import *
-from django.shortcuts import get_list_or_404, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import get_object_or_404
 
 
 # from .tasks import supper_sum
@@ -30,7 +28,7 @@ class MessagesView(APIView):
         else:
             if request.user.is_staff:
                 return Response({"message": "Admin user cannot create a ticket. Select the required ticket"
-                                            " to write message"})
+                                            " to write message"}, status=HTTP_400_BAD_REQUEST)
             ticket = current_object.last()
         ticket_id = ticket.id
         new_message = Message(
@@ -41,7 +39,7 @@ class MessagesView(APIView):
         )
         new_message.save()
         serializer = TicketSerializer(ticket)
-        return Response(serializer.data)
+        return Response(serializer.data, status=HTTP_201_CREATED)
 
 
 class CurrentMessageView(APIView):
@@ -82,43 +80,9 @@ class CurrentMessageView(APIView):
             return Response({'message': 'Wrong status'}, status=HTTP_400_BAD_REQUEST)
         ticket.status = new_status
         ticket.save()
-        serializer = TicketSerializer(ticket.status)
+        # serializer = TicketSerializer(ticket.status)
         return Response({'message': 'Update complete'}, status=HTTP_200_OK)
 
 
 def index(request):
-    context = {}
     return render(request, 'firstapp/main_app.html')
-
-
-def login_page(request):
-    # return HttpResponseRedirect('/')
-    return render(request, 'firstapp/login.html')
-
-
-def do_login(request):
-    user = authenticate(
-        username=request.POST.get('username'),
-        password=request.POST.get('password')
-    )
-    if user:
-        login(request, user)
-        return HttpResponseRedirect('/')
-    else:
-        raise Http404
-
-
-def sign_up_page(request):
-    return render(request, 'firstapp/sign_up.html')
-
-
-def do_sign_up(request):
-    password = request.POST['password']
-    username = request.POST['username']
-
-    new_user = User.objects.create_user(username=username, password=password, email='test@mail.ru')
-    if new_user:
-        login(request, new_user)
-        return HttpResponseRedirect('/')
-    else:
-        raise Http404
