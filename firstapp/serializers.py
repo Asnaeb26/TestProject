@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import *
-from django.contrib.auth.models import User
+
+from .models import Message, Ticket
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -15,11 +15,10 @@ class MessageSerializer(serializers.ModelSerializer):
 
 class TicketSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
-    messages = MessageSerializer(many=True, read_only=True, source='message_set')
+    messages = MessageSerializer(many=True, read_only=True,
+                                 source='message_set')
 
     class Meta:
         model = Ticket
         # fields = '__all__'
         fields = ['id', 'user', 'status', 'messages']
-
-

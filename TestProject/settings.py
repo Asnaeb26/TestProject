@@ -1,11 +1,11 @@
 import os
 from datetime import timedelta
-from celery import Celery
 from pathlib import Path
+
+from celery import Celery
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -17,7 +17,6 @@ SECRET_KEY = 'django-insecure-^@e73t2u(hnjklw6g&bi%acxm6ab2np%pkzxf1=dr-0ayqyw*m
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -67,7 +66,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'TestProject.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -146,7 +144,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -158,7 +155,6 @@ TIME_ZONE = 'Europe/Minsk'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -175,8 +171,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'pustelnikov.ilya@gmail.com'
-EMAIL_HOST_PASSWORD = '123456789Cc'
+EMAIL_HOST_USER = 'some@gmail.com'
+EMAIL_HOST_PASSWORD = 'somepass'
 EMAIL_PORT = 587
 
 # REDIS related settings

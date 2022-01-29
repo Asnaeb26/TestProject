@@ -1,11 +1,12 @@
-from django.shortcuts import render
-from rest_framework.status import *
-from rest_framework.views import Response, APIView
-from firstapp.serializers import *
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_400_BAD_REQUEST)
+from rest_framework.views import APIView, Response
 
+from firstapp.serializers import MessageSerializer, TicketSerializer
 
-# from .tasks import supper_sum
+from .models import Message, Ticket, User
+from .tasks import sending_mail
 
 
 class MessagesView(APIView):
@@ -22,13 +23,14 @@ class MessagesView(APIView):
 
     def post(self, request):
         user_id = request.user.id
-        current_object = Ticket.objects.filter(user_id=user_id, status='unresolved')
+        current_object = Ticket.objects.filter(user_id=user_id,
+                                               status='unresolved')
         if not current_object.exists() and not request.user.is_staff:
             ticket = Ticket.objects.create(user_id=user_id)
         else:
             if request.user.is_staff:
-                return Response({"message": "Admin user cannot create a ticket. Select the required ticket"
-                                            " to write message"}, status=HTTP_400_BAD_REQUEST)
+                return Response({"message": "Admin user cannot create a ticket"},
+                                status=HTTP_400_BAD_REQUEST)
             ticket = current_object.last()
         ticket_id = ticket.id
         new_message = Message(
@@ -63,13 +65,21 @@ class CurrentMessageView(APIView):
             ticket_id=pk
         )
         if not new_message.text:
-            return Response({'message': 'Message is empty'}, status=HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Message is empty'},
+                            status=HTTP_400_BAD_REQUEST)
         serializer = MessageSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             new_message.save()
         if new_message:
-            return Response({'message': 'Successful new message'}, status=HTTP_201_CREATED)
-        return Response({'message': 'Something went wrong'}, status=HTTP_400_BAD_REQUEST)
+            if user.is_staff:
+                recipient = User.objects.get(id=to_user_id)
+                sending_mail.delay(recipient.email,
+                                   recipient.username,
+                                   new_message.text)
+            return Response({'message': 'Successful new message'},
+                            status=HTTP_201_CREATED)
+        return Response({'message': 'Something went wrong'},
+                        status=HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
         statuses = [status[0] for status in Ticket.STATUS]
@@ -77,11 +87,13 @@ class CurrentMessageView(APIView):
         ticket = get_object_or_404(queryset, id=pk)
         new_status = request.data.pop('status')
         if new_status not in statuses:
-            return Response({'message': 'Wrong status'}, status=HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Wrong status'},
+                            status=HTTP_400_BAD_REQUEST)
         ticket.status = new_status
         ticket.save()
         # serializer = TicketSerializer(ticket.status)
-        return Response({'message': 'Update complete'}, status=HTTP_200_OK)
+        return Response({'message': 'Update complete'},
+                        status=HTTP_200_OK)
 
 
 def index(request):

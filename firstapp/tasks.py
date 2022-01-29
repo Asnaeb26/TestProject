@@ -1,11 +1,19 @@
-from TestProject.celery import myapp
+from django.conf import settings
+from django.core.mail import send_mail
+
+from TestProject.celery import app
 
 
-
-@myapp.task
-def supper_sum(x, y):
-    return x + y
-
-
-def divisor(x, y):
-    return x / y
+@app.task
+def sending_mail(recipient, username, text):
+    title = 'Ответ Support с сайта SupportTestSite.com'
+    message = f'Здравствуйте {username}, ' \
+              f'Вам ответили из службы поддержки.\n ' \
+              f'"{text}"\n'
+    send_mail(
+        title,
+        message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[recipient],
+        fail_silently=False,
+    )

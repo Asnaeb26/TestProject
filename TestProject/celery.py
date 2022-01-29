@@ -1,20 +1,15 @@
 import os
+
 from celery import Celery
-from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'TestProject.settings')
 
-myapp = Celery('TestProject')
+app = Celery('TestProject')
 
-myapp.config_from_object('django.conf:settings', namespace='CELERY')
+app.config_from_object('django.conf:settings', namespace='CELERY')
+app.autodiscover_tasks()
 
-#
-# myapp.conf.beat_schedule = {
-#     'my-super-sum-every-5-min' : {
-#         'task': 'firstapp.tasks.supper_sum',
-#         'schedule': crontab(minute='*/5'),
-#         'args': (5, 8),
-#     }
-# }
 
-myapp.autodiscover_tasks()
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')

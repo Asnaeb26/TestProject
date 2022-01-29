@@ -20,8 +20,10 @@ class Ticket(models.Model):
 
 
 class Message(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
-    to_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="to_user")
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name="user")
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE,
+                                related_name="to_user")
     text = models.TextField("Текст")
     date_message = models.DateTimeField(auto_now_add=True)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)

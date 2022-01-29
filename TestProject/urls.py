@@ -1,14 +1,13 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import SimpleRouter
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from firstapp.views import *
+from rest_framework_simplejwt.views import (TokenObtainPairView,
+                                            TokenRefreshView, TokenVerifyView)
+
+from firstapp.views import CurrentMessageView, MessagesView
 
 router = SimpleRouter()
 
-# router.register('api/users', UserView, basename='Users')
-admin.site.site_header = 'Наша админка'
-admin.site.index_title = 'Моя супер админка'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
