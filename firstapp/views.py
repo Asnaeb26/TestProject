@@ -91,7 +91,6 @@ class CurrentMessageView(APIView):
                             status=HTTP_400_BAD_REQUEST)
         ticket.status = new_status
         ticket.save()
-        # serializer = TicketSerializer(ticket.status)
         return Response({'message': 'Update complete'},
                         status=HTTP_200_OK)
 
