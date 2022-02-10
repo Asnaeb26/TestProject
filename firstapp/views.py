@@ -44,7 +44,7 @@ class MessagesView(APIView):
         return Response(serializer.data, status=HTTP_201_CREATED)
 
 
-class CurrentMessageView(APIView):
+class CurrentTicketView(APIView):
     """Список сообщений данного тикета"""
 
     def get(self, request, pk=None):
@@ -96,4 +96,4 @@ class CurrentMessageView(APIView):
 
 
 def index(request):
-    return render(request, 'firstapp/main_app.html')
+    return render(request, 'firstapp/index.html')

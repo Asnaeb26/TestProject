@@ -9,7 +9,6 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        # fields = '__all__'
         exclude = ['ticket']
 
 
@@ -20,5 +19,4 @@ class TicketSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ticket
-        # fields = '__all__'
         fields = ['id', 'user', 'status', 'messages']

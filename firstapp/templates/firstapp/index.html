@@ -2,16 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Мессенджер</title>
+    <title>Tickets</title>
 </head>
 <body>
-<h1>Мессенджер</h1>
-Вы вошли под аккаунтом <b>{{ user }}</b> <a href="messages">Мои сообщения</a> <br>
-{% for client in users %}
-    {% if not client == user %}
-    <a href="profile/{{ client.id }}"> {{ client.username }} <br></a>
-    {% endif %}
-{% endfor %}
+<h1>Тестовое задание Пустельникова</h1>
+user - {{ user }}
 
 </body>
 </html>

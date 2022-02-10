@@ -26,3 +26,23 @@ services:
     depends_on:
       - db
 
+  redis:
+    image: redis:alpine
+
+  celery:
+    restart: always
+    build:
+      context: .
+    command: celery -A TestProject worker -l info
+    volumes:
+      - .:/usr/src/TestProject
+    environment:
+      - POSTGRES_NAME=supportdb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456789Cc
+    depends_on:
+      - db
+      - redis
+      - web
+volumes:
+  data:

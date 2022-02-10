@@ -12,11 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-^@e73t2u(hnjklw6g&bi%acxm6ab2np%pkzxf1=dr-0ayqyw*m'
-# SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = True
-# DEBUG = int(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = []
 # ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
@@ -34,7 +32,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
-    # 'django-extensions',
     'firstapp',
 
 ]
@@ -79,10 +76,8 @@ DATABASES = {
         'NAME': 'supportdb',
         'USER': 'postgres',
         'PASSWORD': '123456789Cc',
-        # 'NAME': os.environ.get('POSTGRES_NAME'),
-        # 'USER': os.environ.get('POSTGRES_USER'),
-        # 'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': 'db',  # 'localhost',
+        # 'HOST': 'db',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
@@ -93,7 +88,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
@@ -108,7 +102,7 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': False,
 
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
+    # 'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     'AUDIENCE': None,
     'ISSUER': None,
@@ -153,7 +147,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-# LANGUAGE_CODE = 'en-us'
 LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'Europe/Minsk'
@@ -177,12 +170,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'some@gmail.com'
-EMAIL_HOST_PASSWORD = 'somepass'
+EMAIL_HOST_USER = 'some@gmail.com'  # Здесь вставить адрес gmail
+EMAIL_HOST_PASSWORD = 'somepass'  # Здесь вставить свой пароль от эл.ящика
 EMAIL_PORT = 587
 
 # REDIS related settings
+
 REDIS_HOST = 'localhost'
+# REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
 BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
