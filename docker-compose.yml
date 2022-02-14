@@ -9,7 +9,6 @@ services:
     environment:
 #      - POSTGRES_NAME=supportdb
       - POSTGRES_DB=supportdb
-#      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456789Cc
 
   web:

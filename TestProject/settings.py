@@ -76,8 +76,8 @@ DATABASES = {
         'NAME': 'supportdb',
         'USER': 'postgres',
         'PASSWORD': '123456789Cc',
-        # 'HOST': 'db',
-        'HOST': 'localhost',
+        'HOST': 'db',
+        # 'HOST': 'localhost',
         'PORT': '5432',
     }
 }
@@ -102,7 +102,7 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': False,
 
     'ALGORITHM': 'HS256',
-    # 'SIGNING_KEY': SECRET_KEY,
+    'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     'AUDIENCE': None,
     'ISSUER': None,
@@ -176,8 +176,8 @@ EMAIL_PORT = 587
 
 # REDIS related settings
 
-REDIS_HOST = 'localhost'
-# REDIS_HOST = 'redis'
+# REDIS_HOST = 'localhost'
+REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
 BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}

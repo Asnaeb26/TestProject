@@ -2,10 +2,10 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
                                    HTTP_400_BAD_REQUEST)
 from rest_framework.views import APIView, Response
-
 from firstapp.serializers import MessageSerializer, TicketSerializer
 
 from .models import Message, Ticket, User
+from .permissions import IsAuthenticatedAndAdmin
 from .tasks import sending_mail
 
 
@@ -39,15 +39,28 @@ class MessagesView(APIView):
             text=request.data.get('text'),
             ticket_id=ticket_id
         )
+        if not new_message.text:
+            return Response({'message': 'Message is empty'},
+                            status=HTTP_400_BAD_REQUEST)
         new_message.save()
         serializer = TicketSerializer(ticket)
-        return Response(serializer.data, status=HTTP_201_CREATED)
+        return Response({'message': 'Successful new message'},
+                        status=HTTP_201_CREATED)
 
 
 class CurrentTicketView(APIView):
     """Список сообщений данного тикета"""
+    permission_classes = [IsAuthenticatedAndAdmin]
+
+    # if XXX == 'put':
+    #     permission_classes = [permissions.IsAdminUser]
+    # else:
+    #     permissions_classes = [permissions.IsAuthenticated]
 
     def get(self, request, pk=None):
+        if not pk in [ticket.id for ticket in Ticket.objects.all()]:
+            return Response({'message': f'No ticket with id = {pk}'},
+                            status=HTTP_400_BAD_REQUEST)
         queryset = Message.objects.filter(ticket_id=pk)
         serializer = MessageSerializer(queryset, many=True)
         return Response(serializer.data, status=HTTP_200_OK)
