@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Message, Ticket
+from .models import Message, Ticket, User
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -10,6 +10,14 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         exclude = ['ticket']
+        # fields = '__all__'
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = '__all__'
 
 
 class TicketSerializer(serializers.ModelSerializer):
