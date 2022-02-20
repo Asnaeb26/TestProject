@@ -29,7 +29,7 @@ def test_api_jwt(client, created_user, user_data):
 
 # @pytest.mark.skip(reason='не готов')
 @pytest.mark.django_db
-def test_create_message(client, created_user, message_data, get_token):
+def test_create_message2(client, created_user, message_data, get_token):
     """
     Тест проверяет создается ли новый тикет, при создании
     нового сообщения, учитывая то, что все тикеты данного
@@ -56,4 +56,18 @@ def test_create_message(client, created_user, message_data, get_token):
     assert Ticket.objects.count() == 2
 
 
-
+@pytest.mark.django_db
+def test_create_ticket_and_message(client, created_user, message_data, get_token):
+    assert Ticket.objects.count() == 0
+    assert Message.objects.count() == 0
+    ticket_url = urls.reverse('tickets-list')
+    resp = client.post(ticket_url, HTTP_AUTHORIZATION=get_token)
+    assert resp.status_code == 201
+    assert Ticket.objects.count() == 1
+    assert Message.objects.count() == 0
+    ticket_id = Ticket.objects.get().id
+    message_url = urls.reverse('messages-list', kwargs={'id': ticket_id})
+    resp = client.post(message_url, message_data, HTTP_AUTHORIZATION=get_token)
+    assert resp.status_code == 201
+    assert Ticket.objects.count() == 1
+    assert Message.objects.count() == 1
