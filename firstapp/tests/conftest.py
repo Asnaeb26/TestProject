@@ -1,11 +1,21 @@
 import pytest
 from django import urls
+from firstapp.models import Ticket
 
 
 @pytest.fixture
 def user_data():
     return {'username': 'TestUser', 'password': '123456789Cc'}
 
+
+@pytest.fixture
+def admin_data():
+    return {'username': 'admin', 'password': 'password'}
+
+
+@pytest.fixture
+def message_data():
+    return {'text': 'Test message by user'}
 
 
 @pytest.fixture
@@ -17,6 +27,13 @@ def created_user(user_data, django_user_model):
 
 
 @pytest.fixture
+def created_ticket(django_user_model, created_user):
+    """Created new ticket"""
+    new_ticket = Ticket.objects.create(user_id=created_user.id)
+    return new_ticket
+
+
+@pytest.fixture
 def get_token(client, user_data):
     url = urls.reverse('token_obtain_pair')
     resp = client.post(url, user_data)
@@ -25,5 +42,8 @@ def get_token(client, user_data):
 
 
 @pytest.fixture
-def message_data():
-    return {'text': 'Test message by user'}
+def get_token_for_admin(client, admin_data):
+    url = urls.reverse('token_obtain_pair')
+    resp = client.post(url, admin_data)
+    token = resp.data['access']
+    return 'Bearer ' + token
