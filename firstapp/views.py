@@ -1,35 +1,35 @@
-from django.shortcuts import render
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.views import Response
 from rest_framework.viewsets import ModelViewSet
 
+from firstapp.models import Message, Ticket, User
+from firstapp.permissions import MessagePermission, TicketPermission
 from firstapp.serializers import MessageSerializer, TicketSerializer
-
-from .models import Message, Ticket, User
-from .permissions import IsAuthenticatedAndAdmin
-from .tasks import sending_mail
+from firstapp.tasks import sending_mail
 
 
-class MessagesView(ModelViewSet):
+class MessagesViewSet(ModelViewSet):
     """Список тикетов и сообщений"""
     serializer_class = MessageSerializer
+    permission_classes = (MessagePermission,)
     lookup_field = 'pk'
 
     def get_queryset(self):
         ticket_id = self.kwargs.get('id')
         return Message.objects.filter(ticket_id=ticket_id)
 
-    def create(self, request, id=None):
+    def create(self, request, *args, **kwargs):
+        ticket_id = kwargs.get('id')
         user = request.user
         if user.is_staff:
-            to_user_id = Ticket.objects.get(id=id).user_id
+            to_user_id = Ticket.objects.get(id=ticket_id).user_id
         else:
             to_user_id = 1
         new_message = Message(
             user_id=user.id,
             to_user_id=to_user_id,
             text=request.data.get('text', None),
-            ticket_id=id
+            ticket_id=ticket_id
         )
         if not new_message.text:
             return Response({'message': 'Message is empty'},
@@ -49,10 +49,10 @@ class MessagesView(ModelViewSet):
                         status=HTTP_400_BAD_REQUEST)
 
 
-class TicketsView(ModelViewSet):
+class TicketsViewSet(ModelViewSet):
     """Список сообщений данного тикета"""
     serializer_class = TicketSerializer
-    permission_classes = (IsAuthenticatedAndAdmin,)
+    permission_classes = (TicketPermission,)
     lookup_field = 'id'
 
     def get_queryset(self):
@@ -70,7 +70,3 @@ class TicketsView(ModelViewSet):
         queryset = Ticket.objects.create(user_id=user.id)
         serializer = TicketSerializer(queryset)
         return Response(serializer.data, status=HTTP_201_CREATED)
-
-
-def index(request):
-    return render(request, 'firstapp/index.html')

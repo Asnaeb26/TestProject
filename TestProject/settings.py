@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^@e73t2u(hnjklw6g&bi%acxm6ab2np%pkzxf1=dr-0ayqyw*m'
+SECRET_KEY = REDIS_HOST = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = True
@@ -69,15 +69,26 @@ WSGI_APPLICATION = 'TestProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'supportdb',
+#         'USER': 'postgres',
+#         'PASSWORD': '123456789Cc',
+#         # 'HOST': 'db',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'supportdb',
-        'USER': 'postgres',
-        'PASSWORD': '123456789Cc',
-        # 'HOST': 'db',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
     }
 }
 
@@ -175,8 +186,8 @@ EMAIL_PORT = 587
 
 # REDIS related settings
 
-REDIS_HOST = 'localhost'
-# REDIS_HOST = 'redis'
+REDIS_HOST = os.environ.get('REDIS_HOST')
+# REDIS_HOST = 'localhost'
 REDIS_PORT = '6379'
 BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
