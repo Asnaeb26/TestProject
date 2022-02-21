@@ -1,7 +1,7 @@
 import pytest
 from django import urls
 
-from firstapp.models import Message, Ticket
+from firstapp.models import Ticket
 
 
 @pytest.mark.django_db

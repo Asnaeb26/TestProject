@@ -1,7 +1,6 @@
-from django.shortcuts import get_object_or_404, render
-from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
-                                   HTTP_400_BAD_REQUEST)
-from rest_framework.views import APIView, Response
+from django.shortcuts import render
+from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.views import Response
 from rest_framework.viewsets import ModelViewSet
 
 from firstapp.serializers import MessageSerializer, TicketSerializer

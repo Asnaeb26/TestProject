@@ -1,5 +1,6 @@
 import pytest
 from django import urls
+
 from firstapp.models import Ticket
 
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import *
+from .models import Message, Ticket
 
 
 @admin.register(Ticket)
@@ -8,6 +8,7 @@ class TicketAdmin(admin.ModelAdmin):
     list_display = ['id', 'status', 'user']
     list_editable = ['status']
     ordering = ['id']
+
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
