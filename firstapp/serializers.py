@@ -9,7 +9,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        exclude = ['ticket']
+        exclude = ('ticket', )
         # fields = '__all__'
 
 

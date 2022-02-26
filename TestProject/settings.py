@@ -75,8 +75,8 @@ WSGI_APPLICATION = 'TestProject.wsgi.application'
 #         'NAME': 'supportdb',
 #         'USER': 'postgres',
 #         'PASSWORD': '123456789Cc',
-#         # 'HOST': 'db',
-#         'HOST': 'localhost',
+#         'HOST': 'db',
+#         # 'HOST': 'localhost',
 #         'PORT': '5432',
 #     }
 # }
