@@ -11,14 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = REDIS_HOST = os.environ.get('SECRET_KEY')
-SECRET_KEY = 'django-insecure-^@e73t2u(hnjklw6g&bi%acxm6ab2np%pkzxf1=dr-0ayqyw*m'
+SECRET_KEY = REDIS_HOST = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = True
 
 ALLOWED_HOSTS = []
-# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 # Application definition
 
@@ -34,7 +32,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'firstapp',
-    'django_extensions'
 
 ]
 
@@ -71,28 +68,16 @@ WSGI_APPLICATION = 'TestProject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'supportdb',
-        'USER': 'postgres',
-        'PASSWORD': '123456789Cc',
-        # 'HOST': 'db',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'HOST': os.environ.get('DB_HOST'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
     }
 }
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'HOST': os.environ.get('DB_HOST'),
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('DB_USER'),
-#         'PASSWORD': os.environ.get('DB_PASS'),
-#     }
-# }
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -182,14 +167,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'pustelnikov.ilya@gmail.com'  # Здесь вставить адрес gmail
-EMAIL_HOST_PASSWORD = '123456789Cc'  # Здесь вставить свой пароль от эл.ящика
+EMAIL_HOST_USER = 'somemail@gmail.com'  # Здесь вставить адрес gmail
+EMAIL_HOST_PASSWORD = 'somepass'  # Здесь вставить свой пароль от эл.ящика
 EMAIL_PORT = 587
 
 # REDIS related settings
 
-# REDIS_HOST = os.environ.get('REDIS_HOST')
-REDIS_HOST = 'localhost'
+REDIS_HOST = os.environ.get('REDIS_HOST')
+# REDIS_HOST = 'localhost'
 REDIS_PORT = '6379'
 BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}

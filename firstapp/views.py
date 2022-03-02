@@ -1,5 +1,4 @@
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
-from rest_framework import permissions
 from rest_framework.views import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -60,7 +59,6 @@ class TicketsViewSet(ModelViewSet):
             return Ticket.objects.filter(user_id=user)
 
     def create(self, request, *args, **kwargs):
-
         user = request.user
         if user.is_staff:
             return Response({"message": "Admin user cannot create a ticket"},

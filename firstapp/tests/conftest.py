@@ -1,12 +1,15 @@
 import pytest
 from django import urls
+from faker import Faker
 
 from firstapp.models import Ticket
 
+fake = Faker()
+
 
 @pytest.fixture
-def faker_user_data():
-    return {'username': 'TestUser', 'password': '123456789Cc'}
+def user_data():
+    return {'username': fake.user_name(), 'password': fake.password()}
 
 
 @pytest.fixture
@@ -15,24 +18,25 @@ def faker_admin_data():
 
 
 @pytest.fixture
-def created_user(faker_user_data, django_user_model):
+def created_user(user_data, django_user_model):
     """Create new user and return user.object"""
-    test_user = django_user_model.objects.create_user(**faker_user_data)
-    test_user.set_password(faker_user_data.get('password'))
+    test_user = django_user_model.objects.create_user(**user_data)
+    test_user.set_password(user_data.get('password'))
     return test_user
 
 
 @pytest.fixture
 def created_ticket(django_user_model, created_user):
-    """Created new ticket"""
+    """Создает новый тикет"""
     new_ticket = Ticket.objects.create(user_id=created_user.id)
     return new_ticket
 
 
 @pytest.fixture
-def get_token(client, faker_user_data):
+def get_token(client, user_data):
+    """Передает созданный токен"""
     url = urls.reverse('token_obtain_pair')
-    resp = client.post(url, faker_user_data)
+    resp = client.post(url, user_data)
     token = resp.data['access']
     return 'Bearer ' + token
 
