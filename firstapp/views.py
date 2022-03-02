@@ -1,4 +1,5 @@
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework import permissions
 from rest_framework.views import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -8,49 +9,45 @@ from firstapp.serializers import MessageSerializer, TicketSerializer
 from firstapp.tasks import sending_mail
 
 
+def send_mail_to_user(to_user_id: int, text: str):
+    recipient = User.objects.get(id=to_user_id)
+    return sending_mail.delay(recipient.email,
+                              recipient.username,
+                              text)
+
+
 class MessagesViewSet(ModelViewSet):
-    """Список тикетов и сообщений"""
+    """Список сообщений данного пользователя"""
     serializer_class = MessageSerializer
     permission_classes = (MessagePermission,)
     lookup_field = 'pk'
 
     def get_queryset(self):
-        ticket_id = self.kwargs.get('id')
-        return Message.objects.filter(ticket_id=ticket_id)
+        return Message.objects.filter(ticket_id=self.kwargs.get('id'))
 
     def create(self, request, *args, **kwargs):
         ticket_id = kwargs.get('id')
         user = request.user
         if user.is_staff:
-            to_user_id = Ticket.objects.get(id=ticket_id).user_id
+            to_user_id = Ticket.objects.filter(id=ticket_id).values_list('user_id', flat=True)[0]
         else:
             to_user_id = 1
-        new_message = Message(
+        data = dict(
             user_id=user.id,
+            ticket_id=ticket_id,
             to_user_id=to_user_id,
-            text=request.data.get('text', None),
-            ticket_id=ticket_id
+            text=request.data.get('text')
         )
-        if not new_message.text:
-            return Response({'message': 'Message is empty'},
-                            status=HTTP_400_BAD_REQUEST)
-        serializer = MessageSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            new_message.save()
-        if new_message:
-            if user.is_staff:
-                recipient = User.objects.get(id=to_user_id)
-                sending_mail.delay(recipient.email,
-                                   recipient.username,
-                                   new_message.text)
-            serializer = MessageSerializer(new_message)
-            return Response(serializer.data, status=HTTP_201_CREATED)
-        return Response({'message': 'Something went wrong'},
-                        status=HTTP_400_BAD_REQUEST)
+        serializer = MessageSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        if user.is_staff:
+            send_mail_to_user(to_user_id, serializer.validated_data['text'])
+        return Response(serializer.data, status=HTTP_201_CREATED)
 
 
 class TicketsViewSet(ModelViewSet):
-    """Список сообщений данного тикета"""
+    """Список тикетов пользователя"""
     serializer_class = TicketSerializer
     permission_classes = (TicketPermission,)
     lookup_field = 'id'
@@ -63,6 +60,7 @@ class TicketsViewSet(ModelViewSet):
             return Ticket.objects.filter(user_id=user)
 
     def create(self, request, *args, **kwargs):
+
         user = request.user
         if user.is_staff:
             return Response({"message": "Admin user cannot create a ticket"},

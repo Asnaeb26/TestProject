@@ -13,7 +13,8 @@ class Ticket(models.Model):
         choices=STATUS,
         default='unresolved',
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='ticket_user')
 
     def __str__(self):
         return f'Ticket №{self.id} created by {self.user}'
@@ -21,12 +22,13 @@ class Ticket(models.Model):
 
 class Message(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name="user")
+                             related_name="message_user")
     to_user = models.ForeignKey(User, on_delete=models.CASCADE,
                                 related_name="to_user")
     text = models.TextField("Текст")
     date_message = models.DateTimeField(auto_now_add=True)
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE,
+                               related_name='ticket')
 
     def __str__(self):
         return f'Message id:{self.id} created by {self.user}'

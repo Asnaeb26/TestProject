@@ -17,3 +17,4 @@ def sending_mail(recipient, username, text):
         recipient_list=[recipient],
         fail_silently=False,
     )
+

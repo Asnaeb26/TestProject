@@ -19,6 +19,9 @@
 
 Полезные команды `sudo chown -R $USER <path-to-folder>`
 
+Войти в контейнер `docker exec -ti <id_container>> /bin/sh`
+
+
 Админ, **login** - `admin`, **password** - `admin` 
 
   
