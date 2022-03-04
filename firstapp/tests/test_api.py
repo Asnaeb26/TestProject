@@ -4,26 +4,9 @@ from django import urls
 from firstapp.models import Ticket
 
 
-@pytest.mark.django_db
-def test_api_jwt(client, created_user, user_data):
-    url = urls.reverse('token_obtain_pair')
-    resp = client.post(url, user_data)
-    assert resp.status_code == 200
-    assert 'access' and 'refresh' in resp.data
-    token_access = resp.data['access']
-
-    verification_url = urls.reverse('token_verify')
-    resp = client.post(verification_url, {'token': token_access}, format='json')
-    assert resp.status_code == 200
-    resp = client.post(verification_url, {'token': 'fake token'}, format='json')
-    assert resp.status_code == 401
-
-    url_messages = urls.reverse('tickets-list')
-
-    resp = client.get(url_messages, HTTP_AUTHORIZATION='Bearer ' + 'fake token')
-    assert resp.status_code == 401
-
-    resp = client.get(url_messages, HTTP_AUTHORIZATION='Bearer ' + token_access)
+def test_get_ticket_list(client, created_user, get_token):
+    ticket_url = urls.reverse('tickets-list')
+    resp = client.get(ticket_url, HTTP_AUTHORIZATION=get_token)
     assert resp.status_code == 200
 
 
